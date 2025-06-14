@@ -20,11 +20,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Build
-      #   run: npm run build
+      - name: Build
+        run: npm run build -- --configuration production
 
       - name: deploy
-        run: |
-          npm run deploy
-        env:
+        uses: peaceiris/actions-gh-pages@v3
+        with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist/jzv-git/browser
