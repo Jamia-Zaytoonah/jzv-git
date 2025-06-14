@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-On:
+on:
   push:
     branches:
       - main
@@ -21,10 +21,10 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build -- --configuration production
+        run: npm run build
 
       - name: deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
+        run: |
+          npm run deploy
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/jzv-git/browser
