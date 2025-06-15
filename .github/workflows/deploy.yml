@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: ./flat-build
+          path: ./dist/jzv-git/browser
 
       # - name: deploy
       #   uses: peaceiris/actions-gh-pages@v3
