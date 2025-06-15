@@ -23,10 +23,11 @@ jobs:
 
       - name: Build
         run: npm run build
+      - name: Upload artifact
+       uses: actions/upload-artifact@v3
 
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/jzv-git/browser
-          force_orphan: true
