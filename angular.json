@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/jzv-git/browser",
+            "outputPath": "dist/jzv-git",
             "baseHref": "/jzv-git/",
             "index": "src/index.html",
             "browser": "src/main.ts",
