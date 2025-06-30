@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: JZV Deployment Workflow
 
 on:
   push:
@@ -15,33 +15,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - run: npm install
-      - run: npm run build
+      - name: Install and build
+        run: |
+          npm install
+          npm run build
 
-      # Resolve symlinks
-      - run: |
+      - name: Prepare deployment directory
+        run: |
           find ./dist/jzv-git/browser -type l -delete
-          cp -RL ./dist/jzv-git/browser ./deploy-ready
+          mkdir -p deploy-ready
+          tar -cf - -C dist/jzv-git/browser . | tar -xpf - -C deploy-ready
 
-      # Deploy using peaceiris action
-      - uses: peaceiris/actions-gh-pages@v3
+      - name: Push to GitHub_Pages using peaceiris action
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy-ready
 
-      # - name: Prepare deployment
-      #   run: |
-      #     # Create flat directory structure
-      #     mkdir -p deploy-ready
-      #     tar -cf - -C dist/jzv-git/browser . | tar -xpf - -C deploy-ready
-
-      - name: Upload artifact
+      - name: Upload artifact for GitHub Actions
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./deploy-ready
