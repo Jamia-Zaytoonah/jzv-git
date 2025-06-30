@@ -35,6 +35,17 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy-ready
 
+      - name: Prepare deployment
+        run: |
+          # Create flat directory structure
+          mkdir -p deploy-ready
+          tar -cf - -C dist/jzv-git/browser . | tar -xpf - -C deploy-ready
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./deploy-ready
+
   deploy:
       needs: build
       runs-on: ubuntu-latest
