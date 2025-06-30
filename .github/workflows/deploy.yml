@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -30,20 +28,23 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Clean build directory
-        run: rm -rf dist
-
       - name: Build
         run: npm run build
 
-      - name: Check dist output
-        run: ls -lhR ./dist/jzv-git/browser
+      - name: Prepare deployment artifact
+        run: |
+          mkdir -p deployment
+          cp -RL ./dist/jzv-git/browser/* deployment
+          rm -rf deployment/assets/.git
 
-      - name: Upload build output
+      - name: Verify artifact
+        run: ls -lhR deployment
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: ./dist/jzv-git/browser
+          path: deployment
 
   deploy:
     needs: build
