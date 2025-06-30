@@ -1,18 +1,12 @@
-name: Deploy to GitHub Pages
-
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,54 +15,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
       - name: Build
         run: npm run build
-
-      # NEW: Comprehensive symlink resolution
-      - name: Resolve symlinks
-        run: |
-          # Create temporary directory
-          mkdir -p temp-deploy
-
-          # Copy while resolving all symlinks and flattening structure
-          find ./dist/jzv-git/browser -type f -exec cp --parents -L {} temp-deploy \;
-
-          # Remove any empty directories
-          find temp-deploy -type d -empty -delete
-
-          # Create final deployment directory
-          mkdir -p deployment
-          mv temp-deploy/dist/jzv-git/browser/* deployment/
-          rm -rf temp-deploy
-
-      # NEW: Verify no symlinks remain
-      - name: Verify no symlinks
-        run: |
-          echo "Checking for remaining symlinks:"
-          find deployment -type l
-          if [ $(find deployment -type l | wc -l) -ne 0 ]; then
-            echo "ERROR: Symlinks still exist!"
-            exit 1
-          fi
-
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: deployment/
+       uses: actions/upload-artifact@v3
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist/jzv-git/browser
